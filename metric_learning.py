@@ -1,3 +1,9 @@
+# =====================================================================
+# Copyright (c) 2022-2023 Sony Computer Science Laboratories, Inc.,
+# Tokyo, Japan. All rights reserved.
+# This source code is licensed under the license found in the LICENSE
+# file.
+# =====================================================================
 import pickle
 import argparse
 import torch
@@ -43,6 +49,8 @@ from clmr.utils import yaml_config_hook
 
 
 
+# NormSoftmaxLoss is based on classification_metric_learning implementation
+# https://github.com/azgo14/classification_metric_learning/blob/master/metric_learning/modules/losses.py
 class NormSoftmaxLoss(nn.Module):
     """
     L2 normalize weights and apply temperature scaling on logits.
