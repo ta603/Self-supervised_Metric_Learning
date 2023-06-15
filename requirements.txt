@@ -1,0 +1,10 @@
+simclr
+torchaudio-augmentations
+torch
+torchaudio
+pytorch-lightning
+soundfile
+sklearn
+numpy
+matplotlib
+faiss-cpu==1.7.2
