@@ -1,6 +1,6 @@
-# Self-supervised_Metric_Learning
+# Self-supervised Metric Learning
 
-This repo hosts the code and model of [Self-supervised Auxiliary Loss for Metric Learning in Music Similarity-based Retrieval and Auto-tagging](https://arxiv.org/abs/2304.07449).
+This repo hosts the code and model of Self-supervision to Metric Learning for Music Similarity-based Retrieval and Auto-tagging.
 
 ### Installation
 
