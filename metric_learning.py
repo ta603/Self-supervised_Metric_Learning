@@ -164,6 +164,50 @@ def load_model_checkpoint(state_dict) -> OrderedDict:
     return new_state_dict
 
 
+def map_k_for_tag_track(labels, label_idx, results, k, i):
+    sum_precision = 0.0
+    num_hits = 0.0
+    pos = 0
+    j = 0
+    map_k = []
+    while pos < k:
+        idx = results[i,j]
+        if i==idx:
+            # exclude myself
+            j += 1
+            continue
+        if labels[idx][label_idx] == labels[i][label_idx]:
+            # hit
+            num_hits += 1
+            precision = num_hits / (pos + 1)
+            sum_precision += precision
+        map_k.append( sum_precision / (pos+ 1 ) )
+        j += 1
+        pos += 1
+    return map_k
+
+
+def calc_map_k(labels, results):
+    k = results.shape[1] - 1
+    map_k_tag = []
+    # tag loop
+    for label_idx in range(labels.shape[1]):
+        map_k_track = []
+        # track loop
+        for i in range(len(labels)):
+            if labels[i][label_idx]==0:
+                # Only aggregate 'True' track
+                continue
+            map_k = map_k_for_tag_track(labels, label_idx, results, k, i)
+            map_k_track.append(map_k)
+        # calc map@k ( one tag )
+        map_k_track = np.mean(np.array(map_k_track), axis=0)
+        map_k_tag.append(map_k_track)
+    # calc map@k ( all tags )
+    map_k = np.mean(np.array(map_k_tag), axis=0) * 100.0
+    return map_k
+
+
 
 if __name__ == "__main__":
 
@@ -433,7 +477,7 @@ if __name__ == "__main__":
     index = faiss.IndexFlatIP(d) 
     index.add(emb_array)
 
-    k = 8
+    k = 10
     D, I = index.search(emb_array, k+1)
 
     results = I
@@ -466,3 +510,11 @@ if __name__ == "__main__":
     for i in range(len(recall_at_k_ratio)):
         if i+1==1 or i+1==2 or i+1==4 or i+1==8:
             print(f"R@{i+1} = {recall_at_k_ratio[i]}")
+
+    ########################
+    ### MAPGTT@K evaluation
+    ########################
+    map_k = calc_map_k(labels, results)
+    for i in range(len(map_k)):
+        if i+1==1 or i+1==4 or i+1==7 or i+1==10:
+            print(f"MAPGTT@{i+1} = {map_k[i]:.1f}")
